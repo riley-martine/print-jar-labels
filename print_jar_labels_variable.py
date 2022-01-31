@@ -43,22 +43,16 @@ def load_jars() -> list[SmallJar]:
 
 
 def run_checks_and_load() -> list[SmallJar]:
-    try:
-        jars = load_jars()
-    except Exception as e:
-        logging.critical("Unable to load jar info.")
-        logging.critical(e)
-        exit(1)
+    jars = load_jars()
 
     if len(jars) < 10:
-        logging.critical(
+        raise Exception(
             "I was unable to load the jar information from the info file. Check that it is formatted correctly."
         )
-        exit(1)
 
     if not Path(LABELS_FOLDER).exists():
-        logging.critical(
-            "I was unable to locate the labels folder. Are you running this on the right computer?"
+        raise Exception(
+            f"I was unable to locate the labels folder at {LABELS_FOLDER}. Are you running this on the right computer?"
         )
 
     # Check all paths exist
@@ -69,8 +63,10 @@ def run_checks_and_load() -> list[SmallJar]:
             f"I was unable to locate the file for {jar.sku} ({jar.english_name}) where I expected it: {jar.path()}"
         )
 
-    # Check for other paths that are present
+    if len(extant_jars)/len(jars) < 0.5:
+        raise Exception("Too many jars not found.")
 
+    # Check for other paths that are present
     all_printing_paths = (jar.path() for jar in extant_jars)
     extra_files = [
         x for x in Path(LABELS_FOLDER).glob("*1.spub") if x not in all_printing_paths
