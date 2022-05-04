@@ -10,7 +10,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-JAR_QUANTITIES = "jar_target_quantities.csv"
+JAR_QUANTITIES = "jar_median_quantities.csv"
 LABELS_FOLDER = "/Users/jeangleason/Desktop/jar_labels/"
 MOST_TO_PRINT = (
     18  # Don't print more than 18 because we often have label waste
@@ -116,7 +116,9 @@ blends = functools.partial(filter_prefix, prefix="B")
 if __name__ == "__main__":
     logging.getLogger().setLevel(logging.INFO)
     jars = run_checks_and_load()
-    logging.info("Loaded jars.")
+    logging.info(
+        "Loaded jars. Please do a test print to align the label offsets and ensure the 6-label cutoff is correct."
+    )
     cont = input("Continue? Y/n: ")
     if cont.lower() not in ["y", "", "yes"]:
         sys.exit()
